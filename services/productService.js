@@ -25,7 +25,7 @@ exports.resizeProductImages = asyncHandler(async (req, res, next) => {
 
     await sharp(req.files.imageCover[0].buffer)
       .toFormat("jpg")
-      .jpeg({ quality: 95 })
+      .jpg({ quality: 95 })
       .toFile(`uploads/products/${imageCoverFileName}`);
 
     // Save image into our db
@@ -40,7 +40,7 @@ exports.resizeProductImages = asyncHandler(async (req, res, next) => {
 
         await sharp(img.buffer)
           .toFormat("jpg")
-          .jpeg({ quality: 95 })
+          .jpg({ quality: 95 })
           .toFile(`uploads/products/${imageName}`);
 
         // Save image into our db
