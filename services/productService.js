@@ -21,10 +21,10 @@ exports.resizeProductImages = asyncHandler(async (req, res, next) => {
   // console.log(req.files);
   //1- Image processing for imageCover
   if (req.files.imageCover) {
-    const imageCoverFileName = `product-${uuidv4()}-${Date.now()}-cover.jpg`;
+    const imageCoverFileName = `product-${uuidv4()}-${Date.now()}-cover.png`;
 
     await sharp(req.files.imageCover[0].buffer)
-      .toFormat("jpg")
+      .toFormat("png")
       .jpg({ quality: 95 })
       .toFile(`uploads/products/${imageCoverFileName}`);
 
@@ -36,10 +36,10 @@ exports.resizeProductImages = asyncHandler(async (req, res, next) => {
     req.body.images = [];
     await Promise.all(
       req.files.images.map(async (img, index) => {
-        const imageName = `product-${uuidv4()}-${Date.now()}-${index + 1}.jpg`;
+        const imageName = `product-${uuidv4()}-${Date.now()}-${index + 1}.png`;
 
         await sharp(img.buffer)
-          .toFormat("jpg")
+          .toFormat("png")
           .jpg({ quality: 95 })
           .toFile(`uploads/products/${imageName}`);
 
