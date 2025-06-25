@@ -24,14 +24,32 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // 2) Get order price depend on cart price "Check if coupon apply"
+  // 2) Recalculate total price based on actual product prices
+  let totalPrice = 0;
+
+  for (const item of cart.cartItems) {
+    const product = await Product.findById(item.product);
+    if (!product) {
+      return next(new ApiError(`Product with id ${item.product} not found`, 404));
+    }
+
+    const finalPrice = product.priceAfterDiscount ? product.priceAfterDiscount : product.price;
+
+    item.price = finalPrice; // تحديث السعر جوه السلة حسب السعر الحالي للمنتج
+    totalPrice += finalPrice * item.quantity;
+  }
+
+  cart.totalCartPrice = totalPrice;
+  await cart.save();
+
+  // 3) Get order price depend on cart price "Check if coupon apply"
   const cartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
     : cart.totalCartPrice;
 
   const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
 
-  // 3) Create order with default paymentMethodType cash
+  // 4) Create order with default paymentMethodType cash
   const order = await Order.create({
     user: req.user._id,
     cartItems: cart.cartItems,
@@ -39,7 +57,7 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     totalOrderPrice,
   });
 
-  // 4) After creating order, decrement product quantity, increment product sold
+  // 5) After creating order, decrement product quantity, increment product sold
   if (order) {
     const bulkOption = cart.cartItems.map((item) => ({
       updateOne: {
@@ -49,7 +67,7 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     }));
     await Product.bulkWrite(bulkOption, {});
 
-    // 5) Clear cart depend on cartId
+    // 6) Clear cart depend on cartId
     await Cart.findByIdAndDelete(req.params.cartId);
   }
 
