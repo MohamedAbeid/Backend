@@ -159,27 +159,27 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 
   // 3) Create stripe checkout session
   const session = await stripe.checkout.sessions.create({
-  payment_method_types: ['card'],  // تأكد إنك تضيف هذا
+  payment_method_types: ['card'],
   line_items: [
     {
       price_data: {
         currency: 'usd',
         product_data: {
           name: `Order for ${req.user.name}`,
-          // ممكن تضيف description أو صور هنا لو حبيت
         },
-        unit_amount: Math.round(totalOrderPrice * 100), // المبلغ بالمليم (أي جزء من العملة)
+        unit_amount: Math.round(totalOrderPrice * 100), // السعر بعد الخصم مضروب في 100 (لـ currency smallest unit)
       },
       quantity: 1,
     },
   ],
   mode: 'payment',
-  success_url: `${req.protocol}://${req.get('host')}/orders`,
-  cancel_url: `${req.protocol}://${req.get('host')}/cart`,
+  success_url: 'https://mohamedabeid.github.io/FrontEnd/thanks.html',
+  cancel_url: 'https://mohamedabeid.github.io/FrontEnd/cart.html',
   customer_email: req.user.email,
   client_reference_id: req.params.cartId,
   metadata: req.body.shippingAddress,
 });
+
 
 
   // 4) send session to response
