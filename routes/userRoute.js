@@ -33,6 +33,8 @@ router.get("/getMe", getLoggedUserData, getUser);
 router.put("/changeMyPassword", updateLoggedUserPassword);
 router.put("/updateMe", updateLoggedUserValidator, updateLoggedUserData);
 router.delete("/deleteMe", deleteLoggedUserData);
+router.patch("/:id/role", authService.allowedTo("admin"), updateUserRole);
+
 
 // Admin
 router.use(authService.allowedTo("admin", "manager"));
