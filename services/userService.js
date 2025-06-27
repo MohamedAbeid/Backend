@@ -146,3 +146,17 @@ exports.deleteLoggedUserData = asyncHandler(async (req, res, next) => {
 
   res.status(204).json({ status: "Success" });
 });
+
+exports.updateUserRole = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { role: req.body.role },
+    { new: true }
+  );
+
+  if (!user) {
+    return next(new ApiError(`No user for this id ${req.params.id}`, 404));
+  }
+
+  res.status(200).json({ data: user });
+});
