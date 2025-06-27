@@ -21,7 +21,9 @@ const {
   updateLoggedUserPassword,
   updateLoggedUserData,
   deleteLoggedUserData,
+  updateUserRole,   
 } = require("../services/userService");
+
 
 const authService = require("../services/authService");
 
